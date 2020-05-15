@@ -61,6 +61,19 @@ var budgetController = (function () {
 			console.log(data);
 		},
 
+		//usuniecie (data.allItems[type][id]) nie zadziała, bo zaburzy numerację ID		
+		deleteItem: function(type, id) {
+			var ids = data.allItems[type].map(function(current){
+				return current.id;
+			});
+
+			index = ids.indexOf(id);
+			if (index !== -1) {
+				//usuwa 1 element na numerze index
+				data.allItems[type].splice(index, 1)
+			}
+		},
+
 		calculateBudget: function () {
 			//Obliczanie sumy Income i sumy Expense
 			calculateTotal("exp");
@@ -259,10 +272,10 @@ var controller = (function (budgetCtrl, UICtrl) {
 			//inc-0 → Arr['inc', '0']
 			splitID = itemID.split("-");
 			type = splitID[0];
-			ID = splitID[1]
+			ID = parseInt(splitID[1]);
 
-			//usuń item ze struktury danych
-
+			//usuń item z allItems
+			budgetCtrl.deleteItem(type, ID);
 			//usuń item z UI
 
 			//Aktualizacja UI
