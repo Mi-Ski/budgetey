@@ -160,6 +160,12 @@ var UIController = (function () {
 				.insertAdjacentHTML("beforeend", newHtml);
 		},
 
+		deleteListItem: function(selectorID){
+			var idDoUsuniecia = document.getElementById(selectorID);
+			idDoUsuniecia.parentNode.removeChild(idDoUsuniecia)
+			
+		},
+		
 		//CZYSZCZENIE INPUT FIELDS
 
 		clearFields: function () {
@@ -277,7 +283,7 @@ var controller = (function (budgetCtrl, UICtrl) {
 			//usuń item z allItems
 			budgetCtrl.deleteItem(type, ID);
 			//usuń item z UI
-
+			UICtrl.deleteListItem(itemID)
 			//Aktualizacja UI
 		}
 	};
