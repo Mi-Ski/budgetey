@@ -222,7 +222,8 @@ var controller = (function (budgetCtrl, UICtrl) {
 			.querySelector(DOM.inputBtn)
 			.addEventListener("click", ctrlAddItem);
 
-		document.addEventListener("keypress", function (event) {
+		document.
+			addEventListener("keypress", function (event) {
 			if (event.keyCode === 13 || event.which === 13) {
 				ctrlAddItem();
 			}
@@ -285,6 +286,7 @@ var controller = (function (budgetCtrl, UICtrl) {
 			//usuń item z UI
 			UICtrl.deleteListItem(itemID)
 			//Aktualizacja UI
+			updateBudget();
 		}
 	};
 
