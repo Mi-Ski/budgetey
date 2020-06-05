@@ -144,7 +144,8 @@ var UIController = (function () {
 		expensesLabel: ".budget__expenses--value",
 		percentageLabel: ".budget__expenses--percentage",
 		container: ".container",
-		percentExpenseLabel: ".item__percentage"
+		percentExpenseLabel: ".item__percentage",
+		dateLabel: ".budget__title--month",
 	};
 
 	var formatNumber = function (num, type) {
@@ -171,6 +172,12 @@ var UIController = (function () {
 		decimal = numSplit[1];
 
 		return (type === 'exp' ? '-' : '+') + ' ' + integer + '.' + decimal
+	};
+
+	var nodeListForEach = function (list, callback) {
+		for (var i = 0; i < list.length; i++) {
+			callback(list[i], i);
+		}
 	};
 
 	return {
@@ -260,12 +267,6 @@ var UIController = (function () {
 		displayPercentages: function (percentages) {
 			var fields = document.querySelectorAll(DOMstrings.percentExpenseLabel);
 
-			var nodeListForEach = function (list, callback) {
-				for (var i = 0; i < list.length; i++) {
-					callback(list[i], i);
-				}
-			};
-
 			//fields - list, function - callback
 			//current - list[i], index - i
 			nodeListForEach(fields, function (current, index) {
@@ -277,10 +278,39 @@ var UIController = (function () {
 			})
 		},
 
+		displayMonth: function() {
+			var now, month, year, monthList;
+			//var christmas = new Date(2020, 11, 25)
+			now = new Date();
+			monthList = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+
+			month = now.getMonth();
+			month = monthList[month];
+			year = now.getFullYear();
+
+			document.querySelector(DOMstrings.dateLabel).textContent = month + ' ' + year;
+
+		},
+
 		//DOMstrings dostępny globalnie
 		getDOMstrings: function () {
 			return DOMstrings;
 		},
+
+		changedType: function() {
+			//return - nodeList, loop forEach nie działa
+			var fields = document.querySelectorAll(
+				DOMstrings.inputType + ',' +
+				DOMstrings.inputValue + ',' +
+				DOMstrings.inputDescription
+			);
+
+			nodeListForEach(fields, function(cur) {
+				cur.classList.toggle('red-focus')
+			});
+
+			document.querySelector(DOMstrings.inputBtn).classList.toggle('red')
+		}
 	};
 })();
 
@@ -294,20 +324,16 @@ var controller = (function (budgetCtrl, UICtrl) {
 	var setUpEventListeners = function () {
 		var DOM = UICtrl.getDOMstrings();
 
-		document
-			.querySelector(DOM.inputBtn)
-			.addEventListener("click", ctrlAddItem);
+		document.querySelector(DOM.inputBtn).addEventListener("click", ctrlAddItem);
 
-		document.
-			addEventListener("keypress", function (event) {
+		document.addEventListener("keypress", function (event) {
 				if (event.keyCode === 13 || event.which === 13) {
 					ctrlAddItem();
 				}
 			});
 
-		document
-			.querySelector(DOM.container)
-			.addEventListener("click", ctrlDeleteItem);
+		document.querySelector(DOM.container).addEventListener("click", ctrlDeleteItem);
+		document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 	};
 
 	var updateBudget = function () {
@@ -387,10 +413,12 @@ var controller = (function (budgetCtrl, UICtrl) {
 		}
 	};
 
+
 	return {
 		init: function () {
 			console.log("app has started");
-			UIController.displayBudget({
+			UICtrl.displayMonth();
+			UICtrl.displayBudget({
 				BudgetLeft: 0,
 				totalInc: 0,
 				totalExp: 0,
